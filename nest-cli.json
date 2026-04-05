@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/rest-service/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/rest-service/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/rest-service",
+  "project": "rest-service",
+  "projects": {
+    "grpc-service": {
+      "type": "application",
+      "root": "apps/grpc-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/grpc-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/grpc-service/tsconfig.app.json"
+      }
+    },
+    "rest-service": {
+      "type": "application",
+      "root": "apps/rest-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/rest-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/rest-service/tsconfig.app.json"
+      }
+    },
+    "shared-business": {
+      "type": "library",
+      "root": "libs/shared-business",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared-business/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared-business/tsconfig.lib.json"
+      }
+    }
+  }
+}
