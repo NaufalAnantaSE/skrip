@@ -17,7 +17,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/grpc-service/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/grpc-service/tsconfig.app.json"
+        "tsConfigPath": "apps/grpc-service/tsconfig.app.json",
+        "assets": ["**/*.proto"],
+        "watchAssets": true
       }
     },
     "rest-service": {

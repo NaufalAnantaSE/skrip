@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { GrpcServiceController } from './grpc-service.controller';
+import { SharedBusinessModule } from '@app/shared-business';
 
 
 @Module({
-  imports: [],
+  imports: [SharedBusinessModule],
   controllers: [GrpcServiceController],
   providers: [],
 })
