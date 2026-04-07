@@ -29,18 +29,15 @@ export const options = {
             { duration: '75s', target: 200 },
             { duration: '75s', target: 0 },
           ],
-          gracefulRampDown: '5s', // Adopsi dari temen lu: Biar user selesain request terakhirnya
+          gracefulRampDown: '5s', 
         },
   },
-  // Adopsi dari temen lu: Pasang standar latensi ketat
   thresholds: {
-    // Kalau 95% request lebih dari 500ms, k6 akan nandain tes ini "Gagal"
     http_req_duration: ['p(95)<1000'], 
     grpc_req_duration: ['p(95)<1000'],
   },
 };
 
-// --- FITUR ADOPSI: TIMESTAMP WIB ---
 function formatWIB(date) {
   return date.toLocaleString('id-ID', {
     timeZone: 'Asia/Jakarta',
@@ -55,7 +52,6 @@ export function setup() {
   return { start: start.toISOString() };
 }
 
-// --- LOGIC UTAMA ---
 export default function () {
   if (PROTOCOL === 'rest') {
     const url = `http://localhost:3000/products/${PAYLOAD_TYPE}`;
@@ -70,7 +66,6 @@ export default function () {
   }
 }
 
-// --- FITUR ADOPSI: REKAP WAKTU ---
 export function teardown(data) {
   const end = new Date();
   const start = new Date(data.start);
