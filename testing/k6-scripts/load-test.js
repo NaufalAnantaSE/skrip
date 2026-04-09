@@ -54,11 +54,11 @@ export function setup() {
 
 export default function () {
   if (PROTOCOL === 'rest') {
-    const url = `http://localhost:3000/products/${PAYLOAD_TYPE}`;
+    const url = `http://72.31.36.138:3000/products/${PAYLOAD_TYPE}`;
     const res = http.get(url);
     check(res, { 'REST status is 200': (r) => r.status === 200 });
   } else if (PROTOCOL === 'grpc') {
-    grpcClient.connect('127.0.0.1:5000', { plaintext: true });
+    grpcClient.connect('72.31.36.138:5000', { plaintext: true });
     const payload = { payloadType: PAYLOAD_TYPE };
     const response = grpcClient.invoke('product.ProductService/GetProduct', payload);
     check(response, { 'gRPC status is OK': (r) => r && r.status === grpc.StatusOK });
