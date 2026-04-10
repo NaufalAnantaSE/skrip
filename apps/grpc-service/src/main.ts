@@ -11,10 +11,10 @@ async function bootstrap() {
     options: {
       package: 'product',
       protoPath: join(__dirname, 'product.proto'),
-      url: 'localhost:5000',
+      url: '0.0.0.0:5000',
     },
   });
   await app.listen();
-  console.log('gRPC microservice is listening on localhost:5000');
+  console.log('gRPC microservice is listening on 0.0.0.0:5000');
 }
 bootstrap();
