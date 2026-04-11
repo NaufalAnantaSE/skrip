@@ -23,29 +23,32 @@ export class SharedBusinessService implements OnModuleInit {
   }
 
   private async seedData() {
-    const count = await this.productRepository.count();
-    if (count > 0) {
-      this.logger.log('Data eksperimen sudah ada. Skip seeding.');
-      return;
-    }
-
-    this.logger.log('Membangun data eksperimen...');
+    this.logger.log('Memeriksa ketersediaan data eksperimen...');
+    
     const payloads = [
       { type: '1KB', size: 1 },
       { type: '10KB', size: 10 },
       { type: '100KB', size: 100 },
+      { type: '1MB', size: 1024 }, 
     ];
 
     for (const p of payloads) {
-      const description = this.generateExactPayload(p.size);
-      const product = this.productRepository.create({
-        name: `Produk Uji ${p.type}`,
-        price: 10000,
-        payloadType: p.type,
-        description: description,
-      });
-      await this.productRepository.save(product);
-      this.logger.log(`Berhasil injeksi payload ${p.type}`);
+      const exists = await this.productRepository.findOne({ where: { payloadType: p.type } });
+      
+      if (!exists) {
+        this.logger.log(`Payload ${p.type} belum ada. Membangun data...`);
+        const description = this.generateExactPayload(p.size);
+        const product = this.productRepository.create({
+          name: `Produk Uji ${p.type}`,
+          price: 10000,
+          payloadType: p.type,
+          description: description,
+        });
+        await this.productRepository.save(product);
+        this.logger.log(`Berhasil injeksi payload ${p.type}`);
+      } else {
+        this.logger.log(`Payload ${p.type} sudah tersedia. Skip.`);
+      }
     }
   }
 
