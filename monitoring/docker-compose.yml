@@ -4,57 +4,19 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus_server
-    network_mode: "host"
+    network_mode: "host" 
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.enable-remote-write-receiver' 
-    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana_dashboard
-    network_mode: "host"
+    network_mode: "host" 
     environment:
-      - GF_SERVER_HTTP_PORT=3001
+      - GF_SERVER_HTTP_PORT=3005 
     volumes:
       - grafana_data:/var/lib/grafana
-    restart: unless-stopped
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node_exporter
-    network_mode: "host"
-    pid: "host" 
-    restart: unless-stopped
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
-    network_mode: "host"
-    privileged: true
-    devices:
-      - /dev/kmsg:/dev/kmsg 
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    restart: unless-stopped
 
 volumes:
   prometheus_data:
