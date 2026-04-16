@@ -43,6 +43,8 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     privileged: true
+    pid: host
+    cgroupns_mode: host
     ports:
       - "8080:8080"
     volumes:
