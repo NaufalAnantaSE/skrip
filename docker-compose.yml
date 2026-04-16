@@ -9,7 +9,6 @@ services:
     container_name: rest_service_container
     network_mode: "host" 
     environment:
-      NODE_OPTIONS: "--max-old-space-size=1536"
       DB_HOST: 127.0.0.1 
       DB_PORT: 5432
       DB_USER: naufal
@@ -24,7 +23,6 @@ services:
     container_name: grpc_service_container
     network_mode: "host"
     environment:
-      NODE_OPTIONS: "--max-old-space-size=1536"
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
       DB_USER: naufal
