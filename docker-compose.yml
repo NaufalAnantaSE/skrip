@@ -9,21 +9,22 @@ services:
     container_name: rest_service_container
     network_mode: "host" 
     environment:
+      NODE_OPTIONS: "--max-old-space-size=1536"
       DB_HOST: 127.0.0.1 
       DB_PORT: 5432
       DB_USER: naufal
       DB_PASS: password_123
       DB_NAME: microservice_db
-
+      
   grpc-service:
     build:
       context: .
       args:
         APP_NAME: grpc-service
     container_name: grpc_service_container
-
     network_mode: "host"
     environment:
+      NODE_OPTIONS: "--max-old-space-size=1536"
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
       DB_USER: naufal
