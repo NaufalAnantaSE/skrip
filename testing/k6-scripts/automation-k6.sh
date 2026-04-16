@@ -2,7 +2,7 @@
 
 PROTOCOLS=("rest" "grpc")
 PAYLOADS=("10KB" "100KB" "1MB")
-VUS=(10 50 100)
+VUS=(50 100 200)
 REPS=(1 2 3 4 5)
 
 echo "memulai automasi load testing dengan k6..."
