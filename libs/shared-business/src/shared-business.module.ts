@@ -6,7 +6,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,11 +29,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     //   type: 'postgres',
     //   host: 'localhost',
     //   port: 5432,
-    //   username: 'naufal', 
-    //   password: 'password_123', 
-    //   database: 'microservice_db', 
+    //   username: 'naufal',
+    //   password: 'password_123',
+    //   database: 'microservice_db',
     //   entities: [Product],
-    //   synchronize: true, 
+    //   synchronize: true,
     // }),
     TypeOrmModule.forFeature([Product]),
   ],

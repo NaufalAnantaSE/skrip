@@ -24,17 +24,19 @@ export class SharedBusinessService implements OnModuleInit {
 
   private async seedData() {
     this.logger.log('Memeriksa ketersediaan data eksperimen...');
-    
+
     const payloads = [
       { type: '1KB', size: 1 },
       { type: '10KB', size: 10 },
       { type: '100KB', size: 100 },
-      { type: '1MB', size: 1024 }, 
+      { type: '1MB', size: 1024 },
     ];
 
     for (const p of payloads) {
-      const exists = await this.productRepository.findOne({ where: { payloadType: p.type } });
-      
+      const exists = await this.productRepository.findOne({
+        where: { payloadType: p.type },
+      });
+
       if (!exists) {
         this.logger.log(`Payload ${p.type} belum ada. Membangun data...`);
         const description = this.generateExactPayload(p.size);

@@ -11,7 +11,9 @@ describe('GrpcServiceController', () => {
       providers: [GrpcServiceService],
     }).compile();
 
-    grpcServiceController = app.get<GrpcServiceController>(GrpcServiceController);
+    grpcServiceController = app.get<GrpcServiceController>(
+      GrpcServiceController,
+    );
   });
 
   describe('root', () => {

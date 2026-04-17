@@ -1,7 +1,6 @@
 import { GrpcMethod } from '@nestjs/microservices';
-import { SharedBusinessService } from './../../../libs/shared-business/src/shared-business.service';
 import { Controller } from '@nestjs/common';
-
+import { SharedBusinessService } from '../../../libs/shared-business/src';
 
 @Controller()
 export class GrpcServiceController {
@@ -9,12 +8,12 @@ export class GrpcServiceController {
 
   @GrpcMethod('ProductService', 'GetProduct')
   async getProduct(payload: { payloadType: string }) {
-    const product = await this.sharedBusinessService.getProductByPayloadType(payload.payloadType);
+    const product = await this.sharedBusinessService.getProductByPayloadType(
+      payload.payloadType,
+    );
     if (!product) {
-      return {}
+      return {};
     }
-    return product
+    return product;
   }
-
-
 }

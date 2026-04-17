@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RestServiceController } from './rest-service.controller';
-import { SharedBusinessModule } from '@app/shared-business';
+import { SharedBusinessModule } from '../../../libs/shared-business/src';
 
 @Module({
   imports: [SharedBusinessModule],
