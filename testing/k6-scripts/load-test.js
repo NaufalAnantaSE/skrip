@@ -76,7 +76,7 @@ export function setup() {
 }
 
 export default function () {
-  const TARGET_IP = '172.31.42.93';
+  const TARGET_IP = '172.31.43.172'; // Ganti dengan IP target jika diperlukan
   if (PROTOCOL === 'rest') {
     const url = `http://${TARGET_IP}:3000/products/${PAYLOAD_TYPE}`;
     const res = http.get(url);
