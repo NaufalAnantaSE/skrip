@@ -22,7 +22,7 @@ function pickVusValue(rawValue, defaultValue) {
 const PROTOCOL = pickEnvValue(__ENV.PROTOCOL, ALLOWED_PROTOCOLS, 'rest');
 const PAYLOAD = pickEnvValue(__ENV.PAYLOAD, ALLOWED_PAYLOADS, '10KB');
 const TYPE = pickEnvValue(__ENV.TYPE, ALLOWED_TYPES, 'fixed');
-const TARGET_IP = __ENV.TARGET_IP || '127.0.0.1';
+const TARGET_IP = __ENV.TARGET_IP || '172.31.43.172';
 const VUS = pickVusValue(__ENV.VUS, DEFAULT_VUS);
 
 const TARGET_URL =
