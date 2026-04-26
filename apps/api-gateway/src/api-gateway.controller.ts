@@ -46,7 +46,8 @@ export class ApiGatewayController implements OnModuleInit {
 
   @Get('rest/:payloadType')
   async benchmarkRest(@Param('payloadType') payloadType: string) {
-    const upstreamUrl = `http://rest_service_container:3000/products/${encodeURIComponent(payloadType)}`;
+    const upstreamHost = process.env.REST_SERVICE_URL || 'http://127.0.0.1:3000';
+    const upstreamUrl = `${upstreamHost}/products/${encodeURIComponent(payloadType)}`;
 
     try {
       const response = await firstValueFrom(this.httpService.get(upstreamUrl));

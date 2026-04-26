@@ -35,7 +35,7 @@ const keepAliveHttpsAgent = new HttpsAgent({
         options: {
           package: 'product',
           protoPath: join(__dirname, 'product.proto'),
-          url: 'grpc_service_container:5000',
+          url: process.env.GRPC_SERVICE_URL || '127.0.0.1:5000',
           channelOptions: {
             'grpc.keepalive_time_ms': 30_000,
             'grpc.keepalive_timeout_ms': 10_000,

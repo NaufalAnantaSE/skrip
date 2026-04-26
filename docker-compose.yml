@@ -35,6 +35,11 @@ services:
       args:
         APP_NAME: api-gateway
     container_name: api_gateway_container
+    network_mode: "host"
     depends_on:
       - rest-service
       - grpc-service
+    environment:
+      - PORT=8080
+      - REST_SERVICE_URL=http://127.0.0.1:3000
+      - GRPC_SERVICE_URL=127.0.0.1:5000
