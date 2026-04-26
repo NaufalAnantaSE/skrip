@@ -7,9 +7,12 @@ services:
       args:
         APP_NAME: rest-service
     container_name: rest_service_container
-    network_mode: "host" 
+    expose:
+      - '3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     environment:
-      DB_HOST: 127.0.0.1 
+      DB_HOST: host.docker.internal
       DB_PORT: 5432
       DB_USER: naufal
       DB_PASS: password_123
@@ -21,10 +24,25 @@ services:
       args:
         APP_NAME: grpc-service
     container_name: grpc_service_container
-    network_mode: "host"
+    expose:
+      - '5000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     environment:
-      DB_HOST: 127.0.0.1
+      DB_HOST: host.docker.internal
       DB_PORT: 5432
       DB_USER: naufal
       DB_PASS: password_123
       DB_NAME: microservice_db
+
+  api-gateway:
+    build:
+      context: .
+      args:
+        APP_NAME: api-gateway
+    container_name: api_gateway_container
+    depends_on:
+      - rest-service
+      - grpc-service
+    ports:
+      - '8080:8080'

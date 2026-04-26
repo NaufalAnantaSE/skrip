@@ -1,71 +1,57 @@
 import http from 'k6/http';
-import grpc from 'k6/net/grpc';
 import { check } from 'k6';
 
-const PROTOCOL = __ENV.PROTOCOL || 'rest';
-const PAYLOAD_TYPE = __ENV.PAYLOAD || '1KB'; 
+const ALLOWED_PROTOCOLS = ['rest', 'grpc'];
+const ALLOWED_PAYLOADS = ['1KB', '10KB', '100KB', '1MB'];
+const ALLOWED_TYPES = ['fixed', 'ramp'];
+const DEFAULT_VUS = 50;
 
-const TARGET_IP = '172.31.43.172'; 
-
-let grpcClient = new grpc.Client();
-if (PROTOCOL === 'grpc') {
-  grpcClient.load(['../../apps/grpc-service/src'], 'product.proto');
+function pickEnvValue(rawValue, allowedValues, defaultValue) {
+  return allowedValues.includes(rawValue) ? rawValue : defaultValue;
 }
 
-export let options = {
+function pickVusValue(rawValue, defaultValue) {
+  const parsed = Number.parseInt(rawValue ?? '', 10);
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return parsed;
+  }
+
+  return defaultValue;
+}
+
+const PROTOCOL = pickEnvValue(__ENV.PROTOCOL, ALLOWED_PROTOCOLS, 'rest');
+const PAYLOAD = pickEnvValue(__ENV.PAYLOAD, ALLOWED_PAYLOADS, '10KB');
+const TYPE = pickEnvValue(__ENV.TYPE, ALLOWED_TYPES, 'fixed');
+const TARGET_IP = __ENV.TARGET_IP || '127.0.0.1';
+const VUS = pickVusValue(__ENV.VUS, DEFAULT_VUS);
+
+const TARGET_URL =
+  'http://' + TARGET_IP + ':8080/benchmark/' + PROTOCOL + '/' + PAYLOAD;
+
+export const options = {
   scenarios: {
-    eksperimen: {
-      executor: 'constant-vus',
-      vus: 100,
-      duration: '5m',
-    },
-  },
-  thresholds: {
-    http_req_duration: ['p(95)<1000'],
-    grpc_req_duration: ['p(95)<1000'],
+    benchmark:
+      TYPE === 'fixed'
+        ? {
+            executor: 'constant-vus',
+            vus: VUS,
+            duration: '5m',
+          }
+        : {
+            executor: 'ramping-vus',
+            startVUs: 10,
+            stages: [
+              { duration: '10m', target: 200 },
+              { duration: '30s', target: 0 },
+            ],
+          },
   },
 };
 
-
-let isGrpcConnected = false;
-
-function formatWIB(date) {
-  return date.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-}
-
-export function setup() {
-  const start = new Date();
-  console.log(`[INFO] Uji ${PROTOCOL.toUpperCase()} - Payload ${PAYLOAD_TYPE} dimulai.`);
-  return { start: start.toISOString() };
-}
-
 export default function () {
-  if (PROTOCOL === 'rest') {
-    const url = `http://${TARGET_IP}:3000/products/${PAYLOAD_TYPE}`;
-    const res = http.get(url);
-    check(res, { 'REST status 200': (r) => r.status === 200 });
-  } else if (PROTOCOL === 'grpc') {
-    
-    if (!isGrpcConnected) {
-      grpcClient.connect(`${TARGET_IP}:5000`, { plaintext: true });
-      isGrpcConnected = true;
-    }
+  const res = http.get(TARGET_URL);
 
-    const payload = { payloadType: PAYLOAD_TYPE };
-    const response = grpcClient.invoke(
-      'product.ProductService/GetProduct',
-      payload,
-    );
-
-    check(response, {
-      'gRPC status OK': (r) => r && r.status === grpc.StatusOK,
-    });
-  }
-}
-
-export function teardown(data) {
-  console.log(`[INFO] Pengujian selesai.`);
-  if (PROTOCOL === 'grpc') {
-    grpcClient.close();
-  }
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+  });
 }
