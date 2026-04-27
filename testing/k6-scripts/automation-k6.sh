@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-TARGET_IP="${1:-127.0.0.1}"
-
 PROTOCOLS=("rest" "grpc")
 PAYLOADS=("1KB" "10KB" "100KB" "1MB")
 FIXED_VUS=(50 100 200)
@@ -11,27 +9,49 @@ FIXED_REPEATS=5
 RAMP_REPEATS=3
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOAD_TEST_SCRIPT="${SCRIPT_DIR}/load-test.js"
+REST_LOAD_TEST_SCRIPT="${SCRIPT_DIR}/load-test-rest.js"
+GRPC_LOAD_TEST_SCRIPT="${SCRIPT_DIR}/load-test-grpc.js"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 RESULT_DIR="${SCRIPT_DIR}/results_${TIMESTAMP}"
 
 mkdir -p "${RESULT_DIR}"
+cd "${SCRIPT_DIR}"
 
 TOTAL_RUNS=$(( ${#PROTOCOLS[@]} * ${#PAYLOADS[@]} * ( ${#FIXED_VUS[@]} * FIXED_REPEATS + RAMP_REPEATS ) ))
 RUN_COUNTER=0
 
-run_k6_with_cooldown() {
-  local output_file="$1"
-  shift
+get_load_test_script() {
+  local protocol="$1"
 
-  k6 run --out "json=${RESULT_DIR}/${output_file}" "$@" "${LOAD_TEST_SCRIPT}"
+  case "${protocol}" in
+    rest)
+      echo "${REST_LOAD_TEST_SCRIPT}"
+      ;;
+    grpc)
+      echo "${GRPC_LOAD_TEST_SCRIPT}"
+      ;;
+    *)
+      echo "Protocol tidak valid: ${protocol}" >&2
+      exit 1
+      ;;
+  esac
+}
+
+run_k6_with_cooldown() {
+  local protocol="$1"
+  local output_file="$2"
+  shift 2
+
+  local load_test_script
+  load_test_script="$(get_load_test_script "${protocol}")"
+
+  k6 run -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${load_test_script}"
 
   # Cool-down period after every run to stabilize host resource state.
   sleep 15
 }
 
 echo "Memulai automasi load testing K6"
-echo "TARGET_IP: ${TARGET_IP}"
 echo "Output directory: ${RESULT_DIR}"
 echo "Total run: ${TOTAL_RUNS}"
 
@@ -44,12 +64,11 @@ for proto in "${PROTOCOLS[@]}"; do
 
         echo "[${RUN_COUNTER}/${TOTAL_RUNS}] FIXED proto=${proto} payload=${payload} vus=${vus} rep=${rep}"
         run_k6_with_cooldown \
+          "${proto}" \
           "${FILE_OUT}" \
-          -e PROTOCOL="${proto}" \
           -e PAYLOAD="${payload}" \
           -e TYPE="fixed" \
-          -e VUS="${vus}" \
-          -e TARGET_IP="${TARGET_IP}"
+          -e VUS="${vus}"
       done
     done
 
@@ -59,13 +78,12 @@ for proto in "${PROTOCOLS[@]}"; do
 
       echo "[${RUN_COUNTER}/${TOTAL_RUNS}] RAMP proto=${proto} payload=${payload} rep=${rep}"
       run_k6_with_cooldown \
+        "${proto}" \
         "${FILE_OUT}" \
-        -e PROTOCOL="${proto}" \
         -e PAYLOAD="${payload}" \
-        -e TYPE="ramp" \
-        -e TARGET_IP="${TARGET_IP}"
+        -e TYPE="ramp"
     done
   done
 done
 
-echo "Semua pengujian selesai. Hasil tersimpan di: ${RESULT_DIR}"
+echo "Semua pengujian selesai. Hasil summary tersimpan di: ${RESULT_DIR}"

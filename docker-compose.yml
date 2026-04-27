@@ -2,19 +2,19 @@ version: '3.8'
 
 services:
   rest-service:
-      build:
-        context: .
-        args:
-          APP_NAME: rest-service
-      container_name: rest_service_container
-      network_mode: "host"
-      environment:
-        DB_HOST: 127.0.0.1
-        DB_PORT: 5432
-        DB_USER: naufal
-        DB_PASS: password_123
-        DB_NAME: microservice_db
-      
+    build:
+      context: .
+      args:
+        APP_NAME: rest-service
+    container_name: rest_service_container
+    network_mode: "host"
+    environment:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: naufal
+      DB_PASS: password_123
+      DB_NAME: microservice_db
+
   grpc-service:
     build:
       context: .
@@ -28,18 +28,3 @@ services:
       DB_USER: naufal
       DB_PASS: password_123
       DB_NAME: microservice_db
-
-  api-gateway:
-    build:
-      context: .
-      args:
-        APP_NAME: api-gateway
-    container_name: api_gateway_container
-    network_mode: "host"
-    depends_on:
-      - rest-service
-      - grpc-service
-    environment:
-      - PORT=8080
-      - REST_SERVICE_URL=http://127.0.0.1:3000
-      - GRPC_SERVICE_URL=127.0.0.1:5000
