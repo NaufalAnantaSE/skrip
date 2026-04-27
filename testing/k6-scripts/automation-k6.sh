@@ -47,8 +47,7 @@ run_k6_with_cooldown() {
 
   k6 run -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${load_test_script}"
 
-  # Cool-down period after every run to stabilize host resource state.
-  sleep 15
+  sleep 90
 }
 
 echo "Memulai automasi load testing K6"
