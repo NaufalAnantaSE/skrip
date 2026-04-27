@@ -30,7 +30,7 @@ let connected = false;
 
 function ensureConnected() {
   if (!connected) {
-    client.connect('127.0.0.1:5000', { plaintext: true });
+    client.connect('172.31.43.172:5000', { plaintext: true });
     connected = true;
   }
 }

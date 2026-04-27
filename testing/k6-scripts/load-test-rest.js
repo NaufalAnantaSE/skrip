@@ -23,7 +23,7 @@ const PAYLOAD = pickEnvValue(__ENV.PAYLOAD, ALLOWED_PAYLOADS, '10KB');
 const TYPE = pickEnvValue(__ENV.TYPE, ALLOWED_TYPES, 'fixed');
 const VUS = pickVusValue(__ENV.VUS, DEFAULT_VUS);
 
-const TARGET_URL = 'http://127.0.0.1:3000/products/' + PAYLOAD;
+const TARGET_URL = 'http://172.31.43.172:3000/products/' + PAYLOAD;
 
 export const options = {
   scenarios: {
