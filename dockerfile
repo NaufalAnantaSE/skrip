@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -9,7 +9,7 @@ COPY . .
 ARG APP_NAME
 RUN npm run build ${APP_NAME}
 
-FROM node:24-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
