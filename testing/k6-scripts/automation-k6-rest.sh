@@ -10,9 +10,9 @@ RUN_COOLDOWN_SECONDS=90
 PAYLOAD_COOLDOWN_SECONDS=200
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GRPC_LOAD_TEST_SCRIPT="${SCRIPT_DIR}/load-test-grpc.js"
+REST_LOAD_TEST_SCRIPT="${SCRIPT_DIR}/load-test-rest.js"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-RESULT_DIR="${SCRIPT_DIR}/results_grpc_${TIMESTAMP}"
+RESULT_DIR="${SCRIPT_DIR}/results_rest_${TIMESTAMP}"
 
 mkdir -p "${RESULT_DIR}"
 cd "${SCRIPT_DIR}"
@@ -30,14 +30,14 @@ run_k6_with_cooldown() {
   local output_file="$1"
   shift 1
 
-  log "Menjalankan K6 gRPC: output=${output_file}"
-  k6 run -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${GRPC_LOAD_TEST_SCRIPT}"
-  log "Selesai K6 gRPC: output=${output_file}"
+  log "Menjalankan K6 REST: output=${output_file}"
+  k6 run -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${REST_LOAD_TEST_SCRIPT}"
+  log "Selesai K6 REST: output=${output_file}"
   log "Cooldown run ${RUN_COOLDOWN_SECONDS}s"
   sleep "${RUN_COOLDOWN_SECONDS}"
 }
 
-log "Memulai automasi load testing K6 (gRPC)"
+log "Memulai automasi load testing K6 (REST)"
 log "Output directory: ${RESULT_DIR}"
 log "Total run: ${TOTAL_RUNS}"
 log "Total payload: ${PAYLOAD_COUNT}"
@@ -49,7 +49,7 @@ for payload_index in "${!PAYLOADS[@]}"; do
   for vus in "${FIXED_VUS[@]}"; do
     for rep in $(seq 1 "${FIXED_REPEATS}"); do
       RUN_COUNTER=$((RUN_COUNTER + 1))
-      FILE_OUT="fixed_grpc_${payload}_${vus}vus_rep${rep}.json"
+      FILE_OUT="fixed_rest_${payload}_${vus}vus_rep${rep}.json"
 
       log "[${RUN_COUNTER}/${TOTAL_RUNS}] FIXED payload=${payload} vus=${vus} rep=${rep} file=${FILE_OUT}"
       run_k6_with_cooldown \
@@ -62,7 +62,7 @@ for payload_index in "${!PAYLOADS[@]}"; do
 
   for rep in $(seq 1 "${RAMP_REPEATS}"); do
     RUN_COUNTER=$((RUN_COUNTER + 1))
-    FILE_OUT="ramp_grpc_${payload}_rep${rep}.json"
+    FILE_OUT="ramp_rest_${payload}_rep${rep}.json"
 
     log "[${RUN_COUNTER}/${TOTAL_RUNS}] RAMP payload=${payload} rep=${rep} file=${FILE_OUT}"
     run_k6_with_cooldown \
