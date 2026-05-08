@@ -29,7 +29,8 @@ run_k6_with_cooldown() {
   shift 1
 
   log "Menjalankan K6 gRPC ramp: output=${output_file}"
-  k6 run -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${GRPC_LOAD_TEST_SCRIPT}"
+  K6_PROMETHEUS_RW_SERVER_URL="http://172.31.43.172:9090/api/v1/write" \
+    k6 run -o experimental-prometheus-rw -e OUT_FILE="${RESULT_DIR}/${output_file}" "$@" "${GRPC_LOAD_TEST_SCRIPT}"
   log "Selesai K6 gRPC ramp: output=${output_file}"
   log "Cooldown run ${RUN_COOLDOWN_SECONDS}s"
   sleep "${RUN_COOLDOWN_SECONDS}"
